@@ -61,18 +61,10 @@
         button:active { box-shadow: inset 4px 4px 0px rgba(0,0,0,0.5); transform: translateY(4px); }
         .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; margin-top: 20px;}
         .btn-secondary:hover { background-color: rgba(255, 107, 0, 0.1); }
-        .btn-danger { background-color: var(--danger); color: #fff; border-color: #000; margin: 0; padding: 10px; width: auto; font-size: 10px;}
 
         .message { font-family: 'VT323', monospace; font-size: 22px; color: var(--danger); margin-top: 15px; min-height: 26px; }
 
         #dashboard-section { display: none; }
-
-        /* โซนอัปโหลดไฟล์ */
-        .upload-zone {
-            background: #000; border: 4px dashed #444; padding: 20px; margin-bottom: 20px;
-            display: flex; flex-direction: column; gap: 15px; align-items: center;
-        }
-        input[type="file"] { font-family: 'VT323', monospace; color: var(--text-light); font-size: 20px; }
 
         /* ช่องค้นหา และปุ่ม Sync */
         .search-row { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -94,21 +86,6 @@
         .file-icon { width: 50px; height: 50px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #555; }
         .file-item a { color: var(--text-code); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
         .file-item a:hover { color: #000; background-color: var(--text-code); }
-
-        /* --- หน้าต่างแจ้งเตือน (Popup Modal) --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 9999;
-            align-items: center; justify-content: center;
-        }
-        .modal-box {
-            background-color: var(--window-bg); border: 6px solid var(--success);
-            padding: 40px 30px; text-align: center; box-shadow: 15px 15px 0px rgba(0,0,0,0.9);
-            max-width: 500px; width: 90%;
-        }
-        .modal-box h3 { color: var(--success); margin-bottom: 30px; line-height: 1.6; font-size: 18px; text-shadow: 2px 2px 0px #000; }
-        .btn-success { background-color: var(--success); color: #000; border: 4px solid #000; padding: 15px; width: 100%; font-family: 'Press Start 2P', cursive; font-size: 16px; cursor: pointer; }
-        .btn-success:active { box-shadow: inset 4px 4px 0px rgba(0,0,0,0.5); transform: translateY(4px); }
 
         ::-webkit-scrollbar { width: 16px; }
         ::-webkit-scrollbar-track { background: #000; border-left: 4px solid #444; }
@@ -138,12 +115,6 @@
         <div class="window-content">
             <h2>DIRECTORY ACCESSED</h2><p class="subtitle">CLOUD STORAGE FILES</p>
             
-            <!-- โซนอัปโหลด -->
-            <div class="upload-zone">
-                <input type="file" id="file-upload" />
-                <button onclick="uploadFile()" id="btn-upload" style="width: 80%; margin-bottom: 0;">UPLOAD TO CLOUD</button>
-            </div>
-
             <!-- ค้นหา & Sync -->
             <div class="search-row">
                 <input type="text" id="search-input" placeholder="> SEARCH FILE NAME..." onkeyup="filterFiles()" style="color: var(--orange);">
@@ -156,14 +127,6 @@
             
             <button class="btn-secondary" onclick="logout()">LOGOUT / DISCONNECT</button>
             <div id="dashboard-message" class="message"></div>
-        </div>
-    </div>
-
-    <!-- หน้าต่างแจ้งเตือนสำเร็จ (Popup Modal) -->
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal-box">
-            <h3>> SYSTEM MESSAGE:<br><br>FILE SAVED TO CLOUD STORAGE SUCCESSFULLY!</h3>
-            <button class="btn-success" onclick="closeModal()">[ OK ]</button>
         </div>
     </div>
 
@@ -186,8 +149,7 @@
         const auth = firebase.auth();
         
         let allFiles = []; 
-        let syncInterval; // ตัวแปรสำหรับจำรอบการ Auto-Sync
-        const SERVER_URL = 'https://sever101-backend.onrender.com'; // ลิงก์ Render ของคุณ
+        const SERVER_URL = 'https://sever101-backend.onrender.com';
 
         // เสียงปุ่ม 8-bit
         function play8BitBeep() {
@@ -209,12 +171,6 @@
             setTimeout(() => msgEl.textContent = '', 5000);
         }
 
-        // ปิดหน้าต่างแจ้งเตือน
-        function closeModal() {
-            document.getElementById('success-modal').style.display = 'none';
-            play8BitBeep();
-        }
-
         function login() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
@@ -222,10 +178,7 @@
                 .then(() => {
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('dashboard-section').style.display = 'block';
-                    fetchFiles(false); // ดึงข้อมูลครั้งแรก
-                    
-                    // สั่งให้แอบดึงข้อมูลใหม่ (Auto-Sync) แบบเงียบๆ ทุกๆ 15 วินาที
-                    syncInterval = setInterval(() => fetchFiles(true), 15000); 
+                    fetchFiles(false); 
                 }).catch(() => showMessage("> ERROR: INVALID CREDENTIALS"));
         }
 
@@ -233,11 +186,9 @@
             auth.signOut().then(() => {
                 document.getElementById('login-section').style.display = 'block';
                 document.getElementById('dashboard-section').style.display = 'none';
-                clearInterval(syncInterval); // ปิดระบบ Auto-Sync
             });
         }
 
-        // ดึงไฟล์ (ถ้า isSilent = true จะโหลดแบบเงียบๆ ไม่โชว์ข้อความรบกวนจอ)
         async function fetchFiles(isSilent = false) {
             const fileListDiv = document.getElementById('file-list');
             if (!isSilent) {
@@ -249,51 +200,10 @@
                 if (!response.ok) throw new Error("SERVER BLOCKED ACCESS");
                 
                 allFiles = await response.json(); 
-                filterFiles(); // ใช้ filterFiles วาดจอแทน เพื่อไม่ให้คำที่ค้นหาอยู่เด้งหายไป
+                filterFiles(); 
             } catch (error) { 
                 if (!isSilent) fileListDiv.innerHTML = `<span style="color:var(--danger);">> ERROR: ${error.message}</span>`; 
             }
-        }
-
-        async function uploadFile() {
-            const fileInput = document.getElementById('file-upload');
-            if (!fileInput.files[0]) return showMessage("> PLEASE SELECT A FILE", true, 'dashboard-message');
-            
-            const btn = document.getElementById('btn-upload');
-            btn.innerText = "UPLOADING..."; btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-
-            try {
-                const token = await firebase.auth().currentUser.getIdToken();
-                const response = await fetch(`${SERVER_URL}/upload`, {
-                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData
-                });
-                if (!response.ok) throw new Error("UPLOAD FAILED");
-                
-                // อัปโหลดสำเร็จ! เด้งหน้าต่าง Popup และรีเฟรชรายชื่อไฟล์แบบเงียบๆ ทันที
-                document.getElementById('success-modal').style.display = 'flex';
-                play8BitBeep();
-                fileInput.value = ''; 
-                fetchFiles(true); 
-
-            } catch (error) { showMessage(`> ERROR: ${error.message}`, true, 'dashboard-message'); }
-            finally { btn.innerText = "UPLOAD TO CLOUD"; btn.disabled = false; }
-        }
-
-        async function deleteFile(fileId) {
-            if(!confirm("ARE YOU SURE YOU WANT TO DELETE THIS FILE?")) return;
-            try {
-                const token = await firebase.auth().currentUser.getIdToken();
-                const response = await fetch(`${SERVER_URL}/delete/${fileId}`, {
-                    method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!response.ok) throw new Error("DELETE FAILED");
-                
-                showMessage("> FILE DELETED", false, 'dashboard-message');
-                fetchFiles(true); // รีเฟรชแบบเงียบๆ หลังลบเสร็จ
-            } catch (error) { showMessage(`> ERROR: ${error.message}`, true, 'dashboard-message'); }
         }
 
         function renderFiles(filesToDisplay) {
@@ -312,7 +222,6 @@
                             ${previewHtml}
                             <a href="${file.webViewLink}" target="_blank">${file.name}</a>
                         </div>
-                        <button class="btn-danger" onclick="deleteFile('${file.id}')">[DEL]</button>
                     </div>
                 `;
             });
