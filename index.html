@@ -13,18 +13,15 @@
             --text-light: #ffffff;
             --text-code: #56d364; 
             --danger: #ff5f56;
+            --success: #27c93f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: 'Press Start 2P', cursive; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg-dark); color: var(--text-light);
+            font-family: 'Press Start 2P', cursive; display: flex;
+            flex-direction: column; align-items: center; min-height: 100vh;
             background-image: linear-gradient(#1a1e36 2px, transparent 2px), linear-gradient(90deg, #1a1e36 2px, transparent 2px);
             background-size: 40px 40px;
         }
@@ -44,29 +41,29 @@
         }
 
         .dot { width: 16px; height: 16px; border: 2px solid #000; border-radius: 50%; }
-        .dot.red { background-color: #ff5f56; } .dot.yellow { background-color: #ffbd2e; } .dot.green { background-color: #27c93f; }
+        .dot.red { background-color: var(--danger); } .dot.yellow { background-color: #ffbd2e; } .dot.green { background-color: var(--success); }
 
         .window-content { padding: 30px; text-align: center; }
         h2 { color: var(--orange); font-size: 20px; margin-bottom: 15px; text-shadow: 2px 2px 0px #000; }
         p.subtitle { font-family: 'VT323', monospace; font-size: 26px; color: #ccc; margin-bottom: 25px; }
 
         input[type="email"], input[type="password"], input[type="text"] {
-            width: 100%; padding: 15px; margin-bottom: 20px; background-color: #000; border: 4px solid #444;
+            width: 100%; padding: 15px; background-color: #000; border: 4px solid #444;
             color: var(--text-code); font-family: 'VT323', monospace; font-size: 24px; outline: none;
         }
         input:focus { border-color: var(--orange); }
 
         button {
-            width: 100%; padding: 15px; margin-bottom: 15px; background-color: var(--orange);
+            width: 100%; padding: 15px; background-color: var(--orange);
             color: #000; border: 4px solid #000; font-family: 'Press Start 2P', cursive;
             font-size: 14px; cursor: pointer; box-shadow: inset -4px -4px 0px rgba(0,0,0,0.3); transition: transform 0.1s;
         }
         button:active { box-shadow: inset 4px 4px 0px rgba(0,0,0,0.5); transform: translateY(4px); }
-        .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; }
+        .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; margin-top: 20px;}
         .btn-secondary:hover { background-color: rgba(255, 107, 0, 0.1); }
         .btn-danger { background-color: var(--danger); color: #fff; border-color: #000; margin: 0; padding: 10px; width: auto; font-size: 10px;}
 
-        .message { font-family: 'VT323', monospace; font-size: 22px; color: #ff5f56; margin-top: 15px; min-height: 26px; }
+        .message { font-family: 'VT323', monospace; font-size: 22px; color: var(--danger); margin-top: 15px; min-height: 26px; }
 
         #dashboard-section { display: none; }
 
@@ -75,13 +72,16 @@
             background: #000; border: 4px dashed #444; padding: 20px; margin-bottom: 20px;
             display: flex; flex-direction: column; gap: 15px; align-items: center;
         }
-        input[type="file"] {
-            font-family: 'VT323', monospace; color: var(--text-light); font-size: 20px;
-        }
+        input[type="file"] { font-family: 'VT323', monospace; color: var(--text-light); font-size: 20px; }
+
+        /* ช่องค้นหา และปุ่ม Sync */
+        .search-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-row input { flex: 1; }
+        .btn-sync { width: auto; padding: 0 20px; background-color: #444; color: #fff; margin-bottom: 0; }
 
         .file-list-container {
             max-height: 400px; overflow-y: auto; text-align: left; background: #000;
-            padding: 20px; border: 4px solid #444;
+            padding: 20px; border: 4px solid #444; margin-top: 5px;
         }
 
         .file-item {
@@ -95,6 +95,21 @@
         .file-item a { color: var(--text-code); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
         .file-item a:hover { color: #000; background-color: var(--text-code); }
 
+        /* --- หน้าต่างแจ้งเตือน (Popup Modal) --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background-color: var(--window-bg); border: 6px solid var(--success);
+            padding: 40px 30px; text-align: center; box-shadow: 15px 15px 0px rgba(0,0,0,0.9);
+            max-width: 500px; width: 90%;
+        }
+        .modal-box h3 { color: var(--success); margin-bottom: 30px; line-height: 1.6; font-size: 18px; text-shadow: 2px 2px 0px #000; }
+        .btn-success { background-color: var(--success); color: #000; border: 4px solid #000; padding: 15px; width: 100%; font-family: 'Press Start 2P', cursive; font-size: 16px; cursor: pointer; }
+        .btn-success:active { box-shadow: inset 4px 4px 0px rgba(0,0,0,0.5); transform: translateY(4px); }
+
         ::-webkit-scrollbar { width: 16px; }
         ::-webkit-scrollbar-track { background: #000; border-left: 4px solid #444; }
         ::-webkit-scrollbar-thumb { background: var(--orange); border: 4px solid #000; }
@@ -105,35 +120,50 @@
 
     <header><h1>101 STUDIO</h1></header>
 
+    <!-- หน้าต่าง Login -->
     <div class="window-container" id="login-section">
         <div class="window-top"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
         <div class="window-content">
             <h2>SYSTEM LOGIN</h2><p class="subtitle">101 CLOUD STORAGE MAX</p>
-            <input type="email" id="email" placeholder="USER_EMAIL" required>
-            <input type="password" id="password" placeholder="PASSWORD" required>
+            <input type="email" id="email" placeholder="USER_EMAIL" style="margin-bottom: 20px;" required>
+            <input type="password" id="password" placeholder="PASSWORD" style="margin-bottom: 20px;" required>
             <button onclick="login()">START SESSION</button>
             <div id="message" class="message"></div>
         </div>
     </div>
 
+    <!-- หน้าต่าง Dashboard -->
     <div class="window-container" id="dashboard-section">
         <div class="window-top"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
         <div class="window-content">
             <h2>DIRECTORY ACCESSED</h2><p class="subtitle">CLOUD STORAGE FILES</p>
             
+            <!-- โซนอัปโหลด -->
             <div class="upload-zone">
                 <input type="file" id="file-upload" />
-                <button onclick="uploadFile()" id="btn-upload" style="width: 80%;">UPLOAD TO CLOUD</button>
+                <button onclick="uploadFile()" id="btn-upload" style="width: 80%; margin-bottom: 0;">UPLOAD TO CLOUD</button>
             </div>
 
-            <input type="text" id="search-input" placeholder="> SEARCH FILE NAME..." onkeyup="filterFiles()" style="color: var(--orange);">
+            <!-- ค้นหา & Sync -->
+            <div class="search-row">
+                <input type="text" id="search-input" placeholder="> SEARCH FILE NAME..." onkeyup="filterFiles()" style="color: var(--orange);">
+                <button class="btn-sync" onclick="fetchFiles(false)" title="Refresh Data">[SYNC]</button>
+            </div>
             
             <div class="file-list-container" id="file-list">
                 <span style="color:var(--text-code);">> CONNECTING TO SERVER...</span>
             </div>
             
-            <button class="btn-secondary" onclick="logout()" style="margin-top: 30px;">LOGOUT / DISCONNECT</button>
+            <button class="btn-secondary" onclick="logout()">LOGOUT / DISCONNECT</button>
             <div id="dashboard-message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- หน้าต่างแจ้งเตือนสำเร็จ (Popup Modal) -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-box">
+            <h3>> SYSTEM MESSAGE:<br><br>FILE SAVED TO CLOUD STORAGE SUCCESSFULLY!</h3>
+            <button class="btn-success" onclick="closeModal()">[ OK ]</button>
         </div>
     </div>
 
@@ -154,9 +184,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        
         let allFiles = []; 
+        let syncInterval; // ตัวแปรสำหรับจำรอบการ Auto-Sync
         const SERVER_URL = 'https://sever101-backend.onrender.com'; // ลิงก์ Render ของคุณ
 
+        // เสียงปุ่ม 8-bit
         function play8BitBeep() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -172,8 +205,14 @@
 
         function showMessage(text, isError = true, targetId = 'message') {
             const msgEl = document.getElementById(targetId);
-            msgEl.style.color = isError ? '#ff5f56' : '#27c93f'; msgEl.textContent = text;
+            msgEl.style.color = isError ? 'var(--danger)' : 'var(--success)'; msgEl.textContent = text;
             setTimeout(() => msgEl.textContent = '', 5000);
+        }
+
+        // ปิดหน้าต่างแจ้งเตือน
+        function closeModal() {
+            document.getElementById('success-modal').style.display = 'none';
+            play8BitBeep();
         }
 
         function login() {
@@ -183,7 +222,10 @@
                 .then(() => {
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('dashboard-section').style.display = 'block';
-                    fetchFiles(); 
+                    fetchFiles(false); // ดึงข้อมูลครั้งแรก
+                    
+                    // สั่งให้แอบดึงข้อมูลใหม่ (Auto-Sync) แบบเงียบๆ ทุกๆ 15 วินาที
+                    syncInterval = setInterval(() => fetchFiles(true), 15000); 
                 }).catch(() => showMessage("> ERROR: INVALID CREDENTIALS"));
         }
 
@@ -191,19 +233,26 @@
             auth.signOut().then(() => {
                 document.getElementById('login-section').style.display = 'block';
                 document.getElementById('dashboard-section').style.display = 'none';
+                clearInterval(syncInterval); // ปิดระบบ Auto-Sync
             });
         }
 
-        async function fetchFiles() {
+        // ดึงไฟล์ (ถ้า isSilent = true จะโหลดแบบเงียบๆ ไม่โชว์ข้อความรบกวนจอ)
+        async function fetchFiles(isSilent = false) {
             const fileListDiv = document.getElementById('file-list');
-            fileListDiv.innerHTML = '<span style="color:#ccc;">> SYNCING SECURE DATA...</span>';
+            if (!isSilent) {
+                fileListDiv.innerHTML = '<span style="color:#ccc;">> SYNCING SECURE DATA...</span>';
+            }
             try {
                 const token = await firebase.auth().currentUser.getIdToken(); 
                 const response = await fetch(`${SERVER_URL}/list-files`, { headers: { 'Authorization': `Bearer ${token}` }});
                 if (!response.ok) throw new Error("SERVER BLOCKED ACCESS");
+                
                 allFiles = await response.json(); 
-                renderFiles(allFiles); 
-            } catch (error) { fileListDiv.innerHTML = `<span style="color:#ff5f56;">> ERROR: ${error.message}</span>`; }
+                filterFiles(); // ใช้ filterFiles วาดจอแทน เพื่อไม่ให้คำที่ค้นหาอยู่เด้งหายไป
+            } catch (error) { 
+                if (!isSilent) fileListDiv.innerHTML = `<span style="color:var(--danger);">> ERROR: ${error.message}</span>`; 
+            }
         }
 
         async function uploadFile() {
@@ -223,9 +272,12 @@
                 });
                 if (!response.ok) throw new Error("UPLOAD FAILED");
                 
-                showMessage("> FILE UPLOADED SUCCESSFULLY", false, 'dashboard-message');
+                // อัปโหลดสำเร็จ! เด้งหน้าต่าง Popup และรีเฟรชรายชื่อไฟล์แบบเงียบๆ ทันที
+                document.getElementById('success-modal').style.display = 'flex';
+                play8BitBeep();
                 fileInput.value = ''; 
-                fetchFiles(); // รีเฟรชรายการไฟล์
+                fetchFiles(true); 
+
             } catch (error) { showMessage(`> ERROR: ${error.message}`, true, 'dashboard-message'); }
             finally { btn.innerText = "UPLOAD TO CLOUD"; btn.disabled = false; }
         }
@@ -238,8 +290,9 @@
                     method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error("DELETE FAILED");
+                
                 showMessage("> FILE DELETED", false, 'dashboard-message');
-                fetchFiles();
+                fetchFiles(true); // รีเฟรชแบบเงียบๆ หลังลบเสร็จ
             } catch (error) { showMessage(`> ERROR: ${error.message}`, true, 'dashboard-message'); }
         }
 
