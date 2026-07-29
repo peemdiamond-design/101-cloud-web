@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>101 STUDIO | Retro Cloud Max</title>
+    
+    <!-- ========================================== -->
+    <!-- [NEW] เซนเซอร์ดักจับบั๊กหน้าเว็บอัตโนมัติ -->
+    <!-- ========================================== -->
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            if (source && source.includes('chrome-extension')) return false;
+            const bugData = { message: message, source: source, lineno: lineno, colno: colno };
+            fetch('https://sever101-backend.onrender.com/report-bug', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bugData)
+            }).catch(err => console.log('ไม่สามารถส่งรายงานบั๊กได้', err));
+            return false; 
+        };
+    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -206,9 +223,6 @@
             }
         }
 
-        // ==========================================
-        // ฟังก์ชันใหม่: ดักจับการคลิกแล้วยิงแจ้งเตือนไปที่ Server
-        // ==========================================
         async function notifyServerOnCall(fileName) {
             try {
                 const token = await firebase.auth().currentUser.getIdToken();
@@ -235,10 +249,8 @@
                     ? `<img src="${file.thumbnailLink}" class="file-thumb">` 
                     : `<div class="file-icon">FILE</div>`;
                 
-                // แปลงเครื่องหมาย ' ในชื่อไฟล์ให้ปลอดภัยก่อนส่งเข้าไปในฟังก์ชัน
                 const safeName = file.name.replace(/'/g, "\\'");
                 
-                // เพิ่ม onclick เพื่อเรียกใช้ notifyServerOnCall ทันทีที่คลิก
                 fileListDiv.innerHTML += `
                     <div class="file-item">
                         <div class="file-info">
