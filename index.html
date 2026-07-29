@@ -77,10 +77,6 @@
         
         .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; margin-top: 15px;}
         .btn-secondary:hover { background-color: rgba(255, 107, 0, 0.1); }
-        
-        /* ปุ่มสำหรับทดสอบให้ระบบพัง (สีแดง) */
-        .btn-danger-test { background-color: transparent; color: var(--danger); border-color: var(--danger); box-shadow: none; margin-top: 15px;}
-        .btn-danger-test:hover { background-color: rgba(255, 95, 86, 0.1); }
 
         .message { font-family: 'VT323', monospace; font-size: 22px; color: var(--danger); margin-top: 15px; min-height: 26px; }
 
@@ -142,9 +138,6 @@
             <div class="file-list-container" id="file-list">
                 <span style="color:var(--text-code);">> CONNECTING TO SERVER...</span>
             </div>
-            
-            <!-- ปุ่มใหม่สำหรับซ้อมหนีไฟ -->
-            <button class="btn-danger-test" onclick="testCrashServer()">[🔥] TEST BACKEND CRASH</button>
             
             <button class="btn-secondary" onclick="logout()">LOGOUT / DISCONNECT</button>
             
@@ -242,25 +235,6 @@
             } catch (error) {
                 console.error('Failed to notify server:', error);
             }
-        }
-
-        // ==========================================
-        // ฟังก์ชันใหม่: ทดสอบยิงให้เซิร์ฟเวอร์พัง
-        // ==========================================
-        async function testCrashServer() {
-            const msgEl = document.getElementById('dashboard-message');
-            msgEl.style.color = 'var(--orange)';
-            msgEl.textContent = '> SENDING CRASH SIGNAL...';
-            try {
-                await fetch(`${SERVER_URL}/test-crash`);
-            } catch (e) {
-                console.log('Crash test signal sent');
-            }
-            setTimeout(() => {
-                msgEl.textContent = '> CHECK YOUR LINE NOTIFICATION!';
-                msgEl.style.color = 'var(--success)';
-                setTimeout(() => msgEl.textContent = '', 5000);
-            }, 2000);
         }
 
         function renderFiles(filesToDisplay) {
