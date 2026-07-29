@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>101 STUDIO | Retro Cloud Max</title>
     
-    <!-- ========================================== -->
-    <!-- [NEW] เซนเซอร์ดักจับบั๊กหน้าเว็บอัตโนมัติ -->
-    <!-- ========================================== -->
+    <!-- เซนเซอร์ดักจับบั๊กหน้าเว็บอัตโนมัติ -->
     <script>
         window.onerror = function(message, source, lineno, colno, error) {
             if (source && source.includes('chrome-extension')) return false;
@@ -76,14 +74,18 @@
             font-size: 14px; cursor: pointer; box-shadow: inset -4px -4px 0px rgba(0,0,0,0.3); transition: transform 0.1s;
         }
         button:active { box-shadow: inset 4px 4px 0px rgba(0,0,0,0.5); transform: translateY(4px); }
-        .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; margin-top: 20px;}
+        
+        .btn-secondary { background-color: transparent; color: var(--orange); border-color: var(--orange); box-shadow: none; margin-top: 15px;}
         .btn-secondary:hover { background-color: rgba(255, 107, 0, 0.1); }
+        
+        /* ปุ่มสำหรับทดสอบให้ระบบพัง (สีแดง) */
+        .btn-danger-test { background-color: transparent; color: var(--danger); border-color: var(--danger); box-shadow: none; margin-top: 15px;}
+        .btn-danger-test:hover { background-color: rgba(255, 95, 86, 0.1); }
 
         .message { font-family: 'VT323', monospace; font-size: 22px; color: var(--danger); margin-top: 15px; min-height: 26px; }
 
         #dashboard-section { display: none; }
 
-        /* ช่องค้นหา และปุ่ม Sync */
         .search-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .search-row input { flex: 1; }
         .btn-sync { width: auto; padding: 0 20px; background-color: #444; color: #fff; margin-bottom: 0; }
@@ -132,7 +134,6 @@
         <div class="window-content">
             <h2>DIRECTORY ACCESSED</h2><p class="subtitle">CLOUD STORAGE FILES</p>
             
-            <!-- ค้นหา & Sync -->
             <div class="search-row">
                 <input type="text" id="search-input" placeholder="> SEARCH FILE NAME..." onkeyup="filterFiles()" style="color: var(--orange);">
                 <button class="btn-sync" onclick="fetchFiles(false)" title="Refresh Data">[SYNC]</button>
@@ -142,7 +143,11 @@
                 <span style="color:var(--text-code);">> CONNECTING TO SERVER...</span>
             </div>
             
+            <!-- ปุ่มใหม่สำหรับซ้อมหนีไฟ -->
+            <button class="btn-danger-test" onclick="testCrashServer()">[🔥] TEST BACKEND CRASH</button>
+            
             <button class="btn-secondary" onclick="logout()">LOGOUT / DISCONNECT</button>
+            
             <div id="dashboard-message" class="message"></div>
         </div>
     </div>
@@ -237,6 +242,25 @@
             } catch (error) {
                 console.error('Failed to notify server:', error);
             }
+        }
+
+        // ==========================================
+        // ฟังก์ชันใหม่: ทดสอบยิงให้เซิร์ฟเวอร์พัง
+        // ==========================================
+        async function testCrashServer() {
+            const msgEl = document.getElementById('dashboard-message');
+            msgEl.style.color = 'var(--orange)';
+            msgEl.textContent = '> SENDING CRASH SIGNAL...';
+            try {
+                await fetch(`${SERVER_URL}/test-crash`);
+            } catch (e) {
+                console.log('Crash test signal sent');
+            }
+            setTimeout(() => {
+                msgEl.textContent = '> CHECK YOUR LINE NOTIFICATION!';
+                msgEl.style.color = 'var(--success)';
+                setTimeout(() => msgEl.textContent = '', 5000);
+            }, 2000);
         }
 
         function renderFiles(filesToDisplay) {
